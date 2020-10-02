@@ -17,7 +17,7 @@ which we will usee below {% endcomment %}
             by sending its id to the url {% endcomment %}
         <div class="flex flex-wrap px-1 mb-10">
             {% for room in rooms %}
-                {% include "partials/room_card.html" with room=room %}
+                {% include "mixins/room_card.html" with room=room %}
             {% endfor %} 
         </div>
 

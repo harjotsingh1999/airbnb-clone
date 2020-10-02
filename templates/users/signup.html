@@ -9,6 +9,7 @@
 {% endblock search_bar %}
 {% block content %}
 
+{% comment %} 
     {% include "partials/social_login.html" %}
 
     <form method="POST" action="{% url 'users:signup' %}">
@@ -16,6 +17,18 @@
         {{form.as_p}}
         <button>Sign up</button>
     </form>
+ {% endcomment %}
+
+    <div class="container lg:w-2/5 sm:w-1/2 md:w-1/2 p-10 xl:w-1/4 mx-auto my-10 flex-col items-center border border-gray-400">
+        {% include "partials/social_login.html" %}
+
+        {% include "mixins/auth/auth_form.html" with form=form cta="Sign Up" %}
+
+        <div class="mt-5 font-medium w-full text-center items-center">
+            <span class="mr-2">Already have an account?</span>
+            <a href="{% url 'users:login' %}" class="text-teal-500">Login</a>
+        </div>
+    </div>
 
 
     

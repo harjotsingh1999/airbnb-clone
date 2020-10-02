@@ -1,12 +1,16 @@
 from django import forms
 from django.contrib.auth import password_validation
+from django.forms import widgets
+from django.forms.fields import EmailField
 from . import models
 
 
 class LoginForm(forms.Form):
 
-    email = forms.EmailField()
-    password = forms.CharField(widget=forms.PasswordInput)
+    email = forms.EmailField(widget=forms.EmailInput(attrs={"placeholder": "Email"}))
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={"placeholder": "Password"})
+    )
 
     # does the work for below two methods
     # when working with "just" clean method
@@ -26,7 +30,7 @@ class LoginForm(forms.Form):
                 # raise forms.ValidationError("Incorrect username or password")
                 # or you can add error or a specific field
                 self.add_error(
-                    "password",
+                    None,
                     forms.ValidationError("Incorrect username or password"),
                 )
         except:
@@ -81,7 +85,6 @@ class SignUpForm(forms.ModelForm):
     class Meta:
         # here we specify the model we want to create a form for
         # also we can specify fields acc to what we want
-
         # models is required
         model = models.User
 
@@ -91,13 +94,20 @@ class SignUpForm(forms.ModelForm):
             "last_name",
             "email",
         )
+        widgets = {
+            "first_name": forms.TextInput(attrs={"placeholder": "First Name"}),
+            "last_name": forms.TextInput(attrs={"placeholder": "Last Name"}),
+            "email": forms.EmailInput(attrs={"placeholder": "Email"}),
+        }
+        # if you particularly want to specify what kind of widgets you want for the fields
+        # or if you want to provide attributes to the fields
 
     password = forms.CharField(
-        widget=forms.PasswordInput,
+        widget=forms.PasswordInput(attrs={"placeholder": "Password"}),
         help_text=password_validation.password_validators_help_text_html(),
     )
     password1 = forms.CharField(
-        widget=forms.PasswordInput,
+        widget=forms.PasswordInput(attrs={"placeholder": "Confirm Password"}),
         label="Confirm Password",
         help_text="Enter same password as above",
     )
@@ -108,21 +118,39 @@ class SignUpForm(forms.ModelForm):
     # however we need to clean password cuz it is custom
     # and not defined in model
 
+    def clean_email(self):
+        print("clean email called")
+        email = self.cleaned_data.get("email")
+        try:
+            models.User.objects.get(email=email)
+            raise forms.ValidationError(
+                "This email is already taken", code="existing_user"
+            )
+        except models.User.DoesNotExist:
+            return email
+
     def clean_password(self):
+        print(self.cleaned_data)
         password = self.cleaned_data.get("password")
+        print("clean password called ", password)
 
         if password:
             try:
                 password_validation.validate_password(password, self.instance)
+                return password
             except forms.ValidationError as error:
+                print("password validation error")
                 self.add_error("password", error)
 
     def clean_password1(self):
+        print(self.cleaned_data)
         # note that you can get password from clean_password1
         # but you can not get password1 from clean_password
         # because it is declared below password and thus is not cleaned yet
         password = self.cleaned_data.get("password")
         password1 = self.cleaned_data.get("password1")
+
+        print("clean password 1 called ", password, password1)
 
         if password != password1:
             # passwords do not match

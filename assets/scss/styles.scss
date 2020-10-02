@@ -13,4 +13,32 @@
     }
 }
 
+.btn {
+  @apply text-center text-lg font-light rounded-md w-full;
+}
+
+input  {
+  @apply border font-medium px-5 border-gray-800 py-5 my-2 text-lg rounded-md w-full;
+  &:focus  {
+    @apply border-teal-500 outline-none;
+  }
+  &:hover {
+    @apply border-teal-500;
+  }
+}
+
+form{
+  .input {
+    @apply mb-3;
+    &.has_error {
+      input {
+        @apply border-red-600;
+        &:focus {
+          @apply border-red-600;
+        }
+      }
+    }
+  }
+}
+
 @tailwind utilities;
