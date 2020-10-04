@@ -3,14 +3,18 @@ import requests
 from django.shortcuts import render, redirect, reverse
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import FormView
+from django.views.generic import FormView, DetailView, UpdateView
 from django.core.files.base import ContentFile
 from django.contrib.auth import authenticate, login, logout
-from . import forms, models
+from django.contrib.auth.views import PasswordChangeView
+from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib import messages
+from requests.api import request
+from . import forms, models, mixins
 
 
 # does the same thing as the LoginView1 class
-class LoginView(FormView):
+class LoginView(mixins.LoggedOutOnlyView, FormView):
 
     template_name = "users/login.html"
     form_class = forms.LoginForm
@@ -23,6 +27,7 @@ class LoginView(FormView):
         user = authenticate(self.request, username=email, password=password)
         if user is not None:
             login(self.request, user)
+            messages.info(self.request, f"Welcome back, {user.first_name}")
         return super().form_valid(form)
         # super takes us to the success url automatically
         # we don't have to redirect
@@ -53,6 +58,7 @@ class LoginView1(View):
             password = form.cleaned_data.get("password")
             user = authenticate(request, username=email, password=password)
             if user is not None:
+                messages.success(request, f"Welcome back, {user.first_name}")
                 login(request, user)
                 # redirect user
                 return redirect(reverse("core:home"))
@@ -68,6 +74,7 @@ def log_out(request):
     # django takes care of everything by alling the below function
     print("log out request", request)
     logout(request)
+    messages.success(request, "Take care sexy!")
     return redirect(reverse("core:home"))
 
 
@@ -84,7 +91,8 @@ def log_out(request):
 """
 
 
-class SignUpView(FormView):
+# mixins.LoggedOutOnlyView means only people who are logged out will see this View
+class SignUpView(mixins.LoggedOutOnlyView, FormView):
     template_name = "users/signup.html"
     form_class = forms.SignUpForm
     success_url = reverse_lazy("core:home")
@@ -104,6 +112,7 @@ class SignUpView(FormView):
         user = authenticate(self.request, username=email, password=password)
         if user is not None:
             login(self.request, user)
+            messages.success(request, f"Welcome, {user.first_name}")
         user.verify_email()
         return super().form_valid(form)
 
@@ -165,7 +174,7 @@ def github_callback(request):
             # if more than 10 mins have passed we get error
             # which is why we have to check
             if error is not None:
-                raise GithubException()
+                raise GithubException("Could not get access token")
             else:
                 access_token = result_json.get("access_token")
                 profile_request = requests.get(
@@ -195,12 +204,17 @@ def github_callback(request):
                                 "is is signed up with github and is trying to log in",
                             )
                             login(request, user)
+                            messages.success(
+                                request, f"Welcome back, {user.first_name}"
+                            )
                         else:
                             print(
                                 user,
                                 "is is not signed up with github and is trying to log in",
                             )
-                            raise GithubException()
+                            raise GithubException(
+                                f"Please log in with {user.login_method}"
+                            )
 
                     except models.User.DoesNotExist:
                         # create new user
@@ -233,20 +247,23 @@ def github_callback(request):
                             "is is now signing with github and is trying to log in",
                         )
                         login(request, new_user)
+                        messages.success(request, f"Welcome, {name}")
 
                     # user exists or does not send to hone in any case
                     return redirect(reverse("core:home"))
                 else:
-                    print("unable to get users username or password")
-                    return redirect(reverse("users:login"))
+                    print("unable to get users username or email")
+                    raise GithubException("Email not available on Github")
+                    # return redirect(reverse("users:login"))
 
         else:
             # no access token returned
             # so dont log user in
             # and send back to home
-            raise GithubException()
-    except GithubException:
-        print("github exception raised")
+            raise GithubException("Could not get authorization code from Github")
+    except GithubException as error:
+        print("github exception raised error= ", error)
+        messages.error(request, error)
         return redirect(reverse("core:home"))
 
 
@@ -264,6 +281,7 @@ class GmailException(BaseException):
 
 
 def gmail_callback(request):
+
     print("gmail login callback request = ", request)
     auth_code = request.GET.get("code", None)
     error = request.GET.get("error")
@@ -293,7 +311,7 @@ def gmail_callback(request):
             print("error in getting access token= ", error)
 
             if error is not None:
-                raise GmailException()
+                raise GmailException("Could not get access token from Gmail")
             else:
                 # continue with google api
                 access_token = access_token_json.get("access_token")
@@ -320,13 +338,16 @@ def gmail_callback(request):
                                 user,
                                 "is is signed up with gmail and is trying to log in",
                             )
+                            messages.success(request, f"Welcome back {user.first_name}")
                             login(request, user)
                         else:
                             print(
                                 user,
                                 "is is not signed up with gmail and is trying to log in",
                             )
-                            raise GmailException()
+                            raise GmailException(
+                                f"Please login with {user.login_method}"
+                            )
 
                     except models.User.DoesNotExist:
                         # create new user
@@ -358,18 +379,98 @@ def gmail_callback(request):
                             new_user,
                             "is is now signing with gmail and is trying to log in",
                         )
+                        messages.success(request, f"Welcome, {name}")
                         login(request, new_user)
 
                     # user exists or does not send to hone in any case
                     return redirect(reverse("core:home"))
                 else:
-                    print("unable to get users username or password")
-                    return redirect(reverse("users:login"))
+                    print("unable to get user's email")
+                    raise GmailException("Unable to get email")
+                    # return redirect(reverse("users:login"))
         else:
             # no access token returned
             # so dont log user in
             # and send back to home
-            raise GmailException()
-    except GmailException:
-        print("Gmail exception raised")
+            raise GmailException("Unable to get authorization token from Gmail")
+    except GmailException as error:
+        print("Gmail exception raised error= ", error)
+        messages.error(request, error)
         return redirect(reverse("core:home"))
+
+
+class UserProfileView(DetailView):
+    model = models.User
+
+    # this tells by what name do we want to refer the model object in the html class
+    context_object_name = "user_obj"
+
+
+# extremely easy built in way to update user profile
+# makes all the changes itself, no cleaning required
+# takes back to "get_absolute_url" of the model upon success
+
+
+# mixins allow us to display message on any view
+class UpdateProfileView(mixins.LoggedInOnlyView, SuccessMessageMixin, UpdateView):
+    model = models.User
+    template_name = "users/update-profile.html"
+
+    fields = (
+        "first_name",
+        "last_name",
+        "gender",
+        "bio",
+        "birthdate",
+        "language",
+        "currency",
+    )
+
+    # this is a field of success message mixin
+    success_message = "Profile Updated"
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    # if you wish to modify forms, like adding placeholders
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class=form_class)
+        form.fields["first_name"].widget.attrs = {"placeholder": "First Name"}
+        form.fields["last_name"].widget.attrs = {"placeholder": "Last Name"}
+        form.fields["gender"].widget.attrs = {"placeholder": "Gender"}
+        form.fields["language"].widget.attrs = {"placeholder": "Language"}
+        form.fields["bio"].widget.attrs = {"placeholder": "Bio"}
+        form.fields["birthdate"].widget.attrs = {"placeholder": "Birthdate"}
+        form.fields["currency"].widget.attrs = {"placeholder": "Currency"}
+        print("form= ", form)
+        return form
+
+    # intercepring the form before data gets saved
+    # and store it to username as well
+    """ def form_valid(self, form):
+        email=form.cleaned_data.get("email")
+        self.object.username= email
+        self.object.save()
+        return super().form_valid(form)"""
+
+
+class UpdatePasswordView(
+    mixins.LoggedInOnlyView,
+    mixins.EmailLoginOnlyView,
+    SuccessMessageMixin,
+    PasswordChangeView,
+):
+    template_name = "users/update-password.html"
+
+    def get_success_url(self):
+        return self.request.user.get_absolute_url()
+
+    # this is a field of success message mixin
+    success_message = "Password Updated"
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class=form_class)
+        form.fields["old_password"].widget.attrs = {"placeholder": "Current Password"}
+        form.fields["new_password1"].widget.attrs = {"placeholder": "New Password"}
+        form.fields["new_password2"].widget.attrs = {"placeholder": "Confirm Password"}
+        return form

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block page_name %}
+    Update Profile
+{% endblock page_name %}
+
+
+{% block search_bar %}
+{% endblock search_bar %}
+{% block content %}
+
+    <div class="container lg:w-2/5 sm:w-1/2 md:w-1/2 p-10 xl:w-1/4 mx-auto my-10 flex-col border border-gray-400">
+
+        {% include 'mixins/auth/auth_form.html' with form=form cta="Update Profile" %}
+
+        {% if object.login_method == "email" %}
+            <div class="mt-5 font-medium w-full text-center items-center">
+                <a href="{% url 'users:password' %}" class="text-teal-500">Change Password</a>
+            </div>
+        {% endif %}
+    </div>
+
+
+    
+{% endblock content %}

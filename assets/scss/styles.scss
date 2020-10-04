@@ -2,11 +2,11 @@
 @tailwind components;
 
 
-.search-box{
+.search-box {
     transition: box-shadow 0.2s linear;
 }
 
-.nav_link{
+.nav_link {
     @apply ml-8 border-b-2 border-transparent flex items-center px-2 h-full;
     a {
       @apply py-10 px-5;
@@ -17,9 +17,15 @@
   @apply text-center text-lg font-light rounded-md w-full;
 }
 
-input  {
+.btn-link {
+  @apply text-center text-lg rounded-md px-40 border py-3 rounded-lg bg-teal-400 border-gray-700 mt-5;
+}
+
+input,
+textarea,
+select {
   @apply border font-medium px-5 border-gray-800 py-5 my-2 text-lg rounded-md w-full;
-  &:focus  {
+  &:focus {
     @apply border-teal-500 outline-none;
   }
   &:hover {
@@ -27,7 +33,13 @@ input  {
   }
 }
 
-form{
+
+textarea {
+  resize: none;
+  height: 100px;
+}
+
+form {
   .input {
     @apply mb-3;
     &.has_error {
@@ -38,6 +50,41 @@ form{
         }
       }
     }
+  }
+}
+
+@keyframes messageFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  5% {
+    opacity: 1;
+    transform: translateY(40px);
+  }
+  95% {
+    opacity: 1;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+}
+
+.message {
+  animation: messageFadeIn 5s ease-in-out forwards;
+  &.error {
+    @apply bg-red-600 text-white;
+  }
+  &.info {
+    @apply bg-blue-500 text-black;
+  }
+  &.success {
+    @apply bg-green-600 text-black;
+  }
+  &.warning {
+    @apply bg-yellow-600 text-black;
   }
 }
 

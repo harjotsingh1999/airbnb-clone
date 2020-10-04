@@ -1,0 +1,18 @@
+{% if messages %}
+    <ul class="absolute mx-auto left-0 right-0 top-0 flex justify-center">
+        {% for message in messages %}
+            <li class="message font-medium rounded-full text-center z-10 py-4 w-64 {% if message.tags %} {{ message.tags}} {% endif %}">{{message}}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% comment %} 
+a message is a one time notification to the user
+like some error has occurred, or document deleted, etc.
+the message tags are different levels such as info, debug, sucess, warning, error.
+the message framework comes in built with django
+you just have to call like this
+messages.error(request, "Error message")
+or messages.warn or messages.info ets depending upon what you require
+django will automaticaly find the messages.html class and send the message to it
+you just have to specify where you want the message     {% endcomment %}

@@ -1,4 +1,7 @@
-<form method="POST" class="w-full">
+<form method="POST" class="w-full" enctype="multipart/form-data">
+{% comment %} 
+multipart was used to enable sending files to the backend, here, profile image
+the backend which would otherwise not receive {% endcomment %}
     {% csrf_token %}
 
     {% comment %} action="{% url 'users:signup' %}" for sign up page and action="{% url 'users:signup' %} for login page "was removed from above cuz user

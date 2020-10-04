@@ -5,6 +5,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+from django.shortcuts import reverse
 
 # from django.utils.html import strip_tags
 # used to strip html tags off a html script
@@ -117,3 +118,10 @@ class User(AbstractUser):
             )
             self.save()
         return
+
+    # django has this build in method
+    # it is useful when you want to have a detail of something on the website
+    def get_absolute_url(self):
+        # this will not only add a "view on site" button to the user in the admin panel
+        # but also take us to this user's profile easily
+        return reverse("users:profile", kwargs={"pk": self.pk})
