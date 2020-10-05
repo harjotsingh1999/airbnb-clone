@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls.base import set_urlconf
 from django_countries.fields import CountryField
 from django.urls import reverse
 from core import models as core_model
@@ -114,6 +115,36 @@ class Room(core_model.TimeStampedModel):
         (photo,) = self.photos.all()[:1]
         print(photo.file.url)
         return photo.file.url
+
+    def get_next_photos(self):
+        photos = self.photos.all()[1:5]
+        print("next photos= ", photos)
+        return photos
+
+    # this is for the data in the website
+    def get_beds(self):
+        if self.beds == 1:
+            return "1 bed"
+        else:
+            return f"{self.beds} beds"
+
+    def get_bedrooms(self):
+        if self.bedrooms == 1:
+            return "1 bedrooms"
+        else:
+            return f"{self.beds} bdrooms"
+
+    def get_baths(self):
+        if self.baths == 1:
+            return "1 baths"
+        else:
+            return f"{self.baths} baths"
+
+    def get_guests(self):
+        if self.guests == 1:
+            return "1 guest"
+        else:
+            return f"{self.guests} guests"
 
 
 class Photo(core_model.TimeStampedModel):
