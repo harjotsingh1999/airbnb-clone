@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block page_name %}
+    Create Room
+{% endblock page_name %}
+
+
+{% block search_bar %}
+{% endblock search_bar %}
+{% block content %}
+
+    <div class="container lg:w-2/5 sm:w-1/2 md:w-1/2 p-10 xl:w-1/4 mx-auto my-10 flex-col border border-gray-400">
+
+        {% include 'mixins/room/room_form.html' with form=form cta="Create Room" %}
+    </div>
+
+
+    
+{% endblock content %} 

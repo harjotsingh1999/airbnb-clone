@@ -5,6 +5,22 @@
   it is cuz django has something called context processors --> {% endcomment %}
 
   {% if user.is_authenticated %}
+
+  {% comment %} this was added later on along with switch hosting
+  this basically shows a link to a host to create a room {% endcomment %}
+  <li class="nav_link hover:border-gray-600">
+    <a href="{% url 'users:switch-hosting' %}">
+    {% if request.session.is_hosting %}
+      Stop Hosting
+    {% else %}
+      Start Hosting
+    {% endif %}
+    </a>
+  </li> 
+
+  {% if request.session.is_hosting %}  
+    <li class="nav_link hover:border-gray-600"><a href="{% url 'rooms:create' %}">Create Room</a></li> 
+  {% endif %}
   <li class="nav_link hover:border-gray-600"><a href="{{user.get_absolute_url}}">Profile</a></li> 
    {% comment %} for the above href you could also have done {% url 'users:profile' user.pk %} and it would have worked the same way {% endcomment %}
   <li class="nav_link hover:border-gray-600"><a href="{% url 'users:logout' %}">Log out</a></li>

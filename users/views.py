@@ -1,13 +1,14 @@
 import os
 import requests
-from django.shortcuts import render, redirect, reverse
-from django.urls import reverse_lazy
+from django.shortcuts import render, redirect
+from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import FormView, DetailView, UpdateView
 from django.core.files.base import ContentFile
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from requests.api import request
 from . import forms, models, mixins
@@ -442,7 +443,7 @@ class UpdateProfileView(mixins.LoggedInOnlyView, SuccessMessageMixin, UpdateView
         form.fields["bio"].widget.attrs = {"placeholder": "Bio"}
         form.fields["birthdate"].widget.attrs = {"placeholder": "Birthdate"}
         form.fields["currency"].widget.attrs = {"placeholder": "Currency"}
-        print("form= ", form)
+        # print("form= ", form)
         return form
 
     # intercepring the form before data gets saved
@@ -474,3 +475,16 @@ class UpdatePasswordView(
         form.fields["new_password1"].widget.attrs = {"placeholder": "New Password"}
         form.fields["new_password2"].widget.attrs = {"placeholder": "Confirm Password"}
         return form
+
+
+# switch bw guest and host mode
+@login_required
+def switch_hosting(request):
+
+    try:
+        del request.session["is_hosting"]
+        print("stopped hosting")
+    except:
+        print("started hosting")
+        request.session["is_hosting"] = True
+    return redirect(reverse("core:home"))

@@ -165,3 +165,7 @@ EMAIL_PORT = "587"
 EMAIL_HOST_USER = os.environ.get("SENDINBLUE_USERNAME")
 EMAIL_HOST_PASSWORD = os.environ.get("SENDINBLUE_PASSWORD")
 EMAIL_FROM = "asingh.harjot@gmail.com"
+
+
+# auth
+LOGIN_URL = "/users/login"

@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.expressions import Value
 from django.urls.base import set_urlconf
 from django_countries.fields import CountryField
 from django.urls import reverse
@@ -112,13 +113,16 @@ class Room(core_model.TimeStampedModel):
         return reverse("rooms:detail", kwargs={"pk": self.pk})
 
     def first_photo(self):
-        (photo,) = self.photos.all()[:1]
-        print(photo.file.url)
-        return photo.file.url
+        try:
+            (photo,) = self.photos.all()[:1]
+            # print(photo.file.url)
+            return photo.file.url
+        except ValueError:
+            return None
 
     def get_next_photos(self):
         photos = self.photos.all()[1:5]
-        print("next photos= ", photos)
+        # print("next photos= ", photos)
         return photos
 
     # this is for the data in the website
