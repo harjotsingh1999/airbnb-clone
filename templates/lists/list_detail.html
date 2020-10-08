@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block page_name %}
+    {{user_obj.first_name}}'s Favourites
+{% endblock page_name %}
+
+{% comment %} page title is what shows up in the browser tab {% endcomment %}
+
+
+{% block search_bar %}
+{% endblock search_bar %}
+{% block content %}
+
+    <div class="min-h-screen">
+    
+        <h3 class="text-xl text-center mb-10 text-teal-600 font-bold">{{user.first_name}}'s Favourites:</h3>
+        {% if user.list.rooms.count > 0 %}
+            <div class="container flex flex-col border rounded-xl items-center mx-auto p-10">
+                <div class="flex mx-auto pb-10 flex-wrap">
+                    {% for room in user.list.rooms.all %}
+                        {% include "mixins/room_card.html" with room=room %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+
+{% endblock content %}

@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load capitalize_filter %}
 {% load is_booked %}
+{% load in_favourites %}
+
 {% block page_name %}
     <h1>{{room.name}}</h1>
 {% endblock page_name %}
@@ -98,10 +101,19 @@
         </div>
         <div class="w-1/3">
             {% if room.host == user %}
-                <a href="{% url 'rooms:edit' room.pk %}" class="btn-link block">Edit Room</a>
+                <a href="{% url 'rooms:edit' room.pk %}" class="text-center block rounded-md px-5 border py-3 bg-teal-400 border-gray-700 my-5">Edit Room</a>
             {% else %}
 
                 {% comment %} this is how to use filter {{"something"|capitalize_filter}} {% endcomment %}
+                {% in_favourites room as in_favs_bool%}
+                {% comment %} created this tag to check whether this room is already in user favourite lists or not {% endcomment %}
+
+                {% if not in_favs_bool %}
+                    <a class="text-center block rounded-md px-5 border py-3 bg-teal-400 border-gray-700 my-5" href="{% url 'lists:save-room' room.pk %}">{% trans "Save to Favourites" %}</a>
+                {% else %}
+                    <a class="text-center block rounded-md px-5 border py-3 bg-red-400 border-gray-700 my-5" href="{% url 'lists:remove-room' room.pk %}">{% trans "Remove from Favourites" %}</a>
+                {% endif %}
+                
                 {% if not request.sesson.is_hosting %}
                     {% for calender in room.get_calenders %}
                     <div class="mb-20">
