@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.urls.base import reverse_lazy
 from django.views.generic import ListView, DetailView, View
 from django.http import Http404
-from django.views.generic.edit import CreateView, FormView, UpdateView
+from django.views.generic.edit import FormView, UpdateView
 from django_countries import Countries
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger, InvalidPage
@@ -110,8 +110,8 @@ def room_detail(request, pk):
 
 
 """ but how does django know that we are passing a primary key in the url
- in Detailview, django by default looks for a pk argument 
- you can also tell on your own how 'pk' (<int:pk>) looks in the url 
+ in Detailview, django by default looks for a pk argument
+ you can also tell on your own how 'pk' (<int:pk>) looks in the url
  by calling pk_url_kwarg="potato" if url contains <int:potato> """
 
 

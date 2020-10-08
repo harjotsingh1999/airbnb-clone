@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
-
+{% load capitalize_filter %}
+{% load is_booked %}
 {% block page_name %}
     <h1>{{room.name}}</h1>
 {% endblock page_name %}
@@ -99,7 +100,36 @@
             {% if room.host == user %}
                 <a href="{% url 'rooms:edit' room.pk %}" class="btn-link block">Edit Room</a>
             {% else %}
-                <a href="#" class="btn-link block">Book Room</a>
+
+                {% comment %} this is how to use filter {{"something"|capitalize_filter}} {% endcomment %}
+                {% if not request.sesson.is_hosting %}
+                    {% for calender in room.get_calenders %}
+                    <div class="mb-20">
+                        <span class="text-center font-medium text-lg block mb-8">{{calender.get_month}} - {{calender.year}}</span>
+                        <div class="cal-grid font-semibold mb-5">
+                            {% for day in calender.day_names %}
+                                <span>{{day}}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="cal-grid">
+                            {% for day in calender.get_days %}
+                                {% is_booked room day as is_booked_bool %}
+                                {% if day.number != 0 %}
+                                    {% if day.past %}
+                                        <span class="bg-gray-300 text-gray-500 w-full text-center rounded p-1">{{day.number}}</span>
+                                    {% elif is_booked_bool %}
+                                        <span class="bg-gray-300 text-gray-500 line-through w-full text-center rounded p-1">{{day.number}}</span>
+                                    {% else %}
+                                        <a href="{% url 'reservations:create' room.pk day.year day.month day.number %}" class="bg-teal-300 text-black w-full text-center rounded p-1 cursor-pointer hover:text-white hover:bg-teal-600 hover:font-medium">{{day.number}}</a>
+                                    {% endif %}
+                                {% else %}
+                                    <span></span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
             {% endif %}
         </div>
     </div>

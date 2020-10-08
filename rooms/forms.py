@@ -42,10 +42,10 @@ class CreatePhotoForm(forms.ModelForm):
     class Meta:
         model = models.Photo
 
-        fields = {
+        fields = [
             "caption",
             "file",
-        }
+        ]
 
     def save(self, pk, *args, **kwargs):
         photo = super().save(commit=False)
@@ -58,7 +58,7 @@ class CreatePhotoForm(forms.ModelForm):
 class CreateRoomForm(forms.ModelForm):
     class Meta:
         model = models.Room
-        fields = {
+        fields = [
             "name",
             "description",
             "country",
@@ -76,7 +76,7 @@ class CreateRoomForm(forms.ModelForm):
             "amenities",
             "facilities",
             "house_rules",
-        }
+        ]
 
     """def save(self, user, *args, **kwargs):
 

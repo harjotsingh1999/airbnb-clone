@@ -18,7 +18,7 @@
 }
 
 .btn-link {
-  @apply text-center text-lg rounded-md px-40 border py-3 rounded-lg bg-teal-400 border-gray-700 mt-5;
+  @apply text-center text-lg rounded-md px-40 border py-3 bg-teal-400 border-gray-700 mt-5;
 }
 
 input,
@@ -86,6 +86,13 @@ form {
   &.warning {
     @apply bg-yellow-600 text-black;
   }
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  justify-items: center;
 }
 
 @tailwind utilities;

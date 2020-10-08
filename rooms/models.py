@@ -1,10 +1,10 @@
 from django.db import models
-from django.db.models.expressions import Value
-from django.urls.base import set_urlconf
+from django.utils import timezone
 from django_countries.fields import CountryField
 from django.urls import reverse
 from core import models as core_model
 from users import models as users_model
+from cal import Calender
 
 
 # Create your models here.
@@ -149,6 +149,19 @@ class Room(core_model.TimeStampedModel):
             return "1 guest"
         else:
             return f"{self.guests} guests"
+
+    def get_calenders(self):
+        now = timezone.now()
+        this_year = now.year
+        this_month = now.month
+        next_month = this_month + 1
+        this_month_cal = Calender(this_year, this_month)
+        if this_month == 12:
+            next_month = 1
+            next_month_cal = Calender(this_year + 1, next_month)
+        else:
+            next_month_cal = Calender(this_year, next_month)
+        return [this_month_cal, next_month_cal]
 
 
 class Photo(core_model.TimeStampedModel):

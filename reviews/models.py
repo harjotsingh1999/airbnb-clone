@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 from core import models as core_models
 from users import models as users_model
 from rooms import models as rooms_model
@@ -10,12 +11,22 @@ class Review(core_models.TimeStampedModel):
     """ Reviews Model Definition """
 
     review = models.TextField()
-    accuracy = models.IntegerField()
-    communication = models.IntegerField()
-    cleanliness = models.IntegerField()
-    location = models.IntegerField()
-    check_in = models.IntegerField()
-    value = models.IntegerField()
+    accuracy = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
+    communication = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
+    cleanliness = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
+    location = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
+    check_in = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
+    value = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     user = models.ForeignKey(
         users_model.User, related_name="reviews", on_delete=models.CASCADE
     )
@@ -42,3 +53,9 @@ class Review(core_models.TimeStampedModel):
 
     # column name where rating is diaplayed is changed like this
     rating_average.short_description = "Average Rating"
+
+    class Meta:
+
+        # ordey by reverse of the day the review was created
+        # that is newest first
+        ordering = ("-created",)

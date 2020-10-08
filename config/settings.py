@@ -51,7 +51,7 @@ PROJECT_APPS = [
 
 THIRD_PARTY_APPS = ["django_countries", "django_seed"]
 
-INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS
+INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_PARTY_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
