@@ -3,7 +3,8 @@
  Did you forget to register or load this tag?
  To resolve this we have to load the tag as done below {% endcomment %}
 
- {% load static %}
+{% load static %}
+{% load i18n %}
 <!DOCTYPE html>
 <html>
   <head>
@@ -17,7 +18,7 @@
     able to get the data {% endcomment %}
 
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css"
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css"/>
   </head>
   <body class="text-gray-800 mt-24 font-light">
      {% include "partials/messages.html" %} 
@@ -28,7 +29,9 @@
         </a>
         {% block search_bar %}
         <form method="get" action="{% url 'rooms:search' %}" class="w-9/12">
-          <input class=" search-box border w-full shadow-md border-gray-300 px-5 py-3 text-gray-700 placeholder-gray-600 font-medium rounded-sm hover:shadow-lg focus:outline-none" name="city" placeholder="Search by City" />
+          <input class=" search-box border w-full shadow-md border-gray-300 px-5 py-3 text-gray-700 placeholder-gray-600 font-medium rounded-sm hover:shadow-lg focus:outline-none"
+                  name="city"
+                  placeholder="{% trans 'Search by City' %}" />
         </form>
         {% endblock search_bar %}
       </div>
@@ -37,5 +40,20 @@
     {% block content %} {% endblock content%}
    
     {% include "partials/footer.html"%}
+    <script>
+    // finding the select laguage select menu from the page
+      const  langSelect=document.getElementById("js-lang");
+
+      // callback function
+      const handleLangChange=()=>{
+        //finding the selected language
+        const selected=langSelect.value;
+
+        // here we will call django to change the session
+        fetch(`{% url 'users:switch-language' %}?lang=${selected}`).then(() => window.location.reload())
+      }
+      //adding event listener to the language select menu
+      langSelect.addEventListener("change", handleLangChange);
+    </script>
   </body>
 </html>

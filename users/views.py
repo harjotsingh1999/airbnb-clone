@@ -1,5 +1,7 @@
 import os
+from django.http.response import HttpResponse
 import requests
+from django.utils import translation
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views import View
@@ -488,3 +490,11 @@ def switch_hosting(request):
         print("started hosting")
         request.session["is_hosting"] = True
     return redirect(reverse("core:home"))
+
+
+def switch_language(request):
+    lang = request.GET.get("lang", None)
+
+    if lang is not None:
+        request.session[translation.LANGUAGE_SESSION_KEY] = lang
+    return HttpResponse(status=200)

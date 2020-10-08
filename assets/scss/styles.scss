@@ -24,7 +24,7 @@
 input,
 textarea,
 select {
-  @apply border font-medium px-5 border-gray-800 py-5 my-2 text-lg rounded-md w-full;
+  @apply border font-medium px-5 border-gray-800 py-5 text-lg my-2 rounded-md w-full;
   &:focus {
     @apply border-teal-500 outline-none;
   }

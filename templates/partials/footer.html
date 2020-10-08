@@ -1,3 +1,19 @@
+{% load i18n %}
 <footer class="container mx-auto text-center py-10 font-medium text-gray-600 border-t">
-    &copy; 2020 Nbnb, Inc. All rights reserved.
+    <div class="flex flex-col">
+        <span>&copy; 2020 Nbnb, Inc. {% trans "All rights reserved." %}</span>
+    </div>
+    <div class="w-1/3 mx-auto mt-5">
+        {% get_current_language as LANGUAGE_CODE %}
+        <select id="js-lang">
+            <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>English</option>
+            <option value="es" {% if LANGUAGE_CODE == 'es' %}selected{% endif %}>Spanish</option>
+        </select>
+    </div>
 </footer>
+
+
+{% comment %} LANGUAGE code will be the same en or es as in values 
+also make sure that values are the same in here and in the locale directory
+i.e., if locale directory has folder for es 
+then the second language here should also be es {% endcomment %}

@@ -1,5 +1,5 @@
 {% extends 'base.html' %} {% block page_name %} Home {% endblock page_name %} 
-
+{% load i18n %}
 {% comment %} 
 you cant add add logic to your html code besides the templates that django provides
 however, django offers filters as well like |add= "1" to add one to a number
@@ -28,7 +28,13 @@ which we will usee below {% endcomment %}
                 </a>
             {% endif %}
 
-            <span class="mx-3">{{page_obj.number}} of {{page_obj.paginator.num_pages}}</span>
+            {% comment %}translating a block of string with variables in between
+             we have to manually specify the variables here
+             {% endcomment %}
+            <span class="mx-3">
+            {% comment %} {{page_obj.number}} of {{page_obj.paginator.num_pages}} {% endcomment %}
+            {% blocktrans with current_page=page_obj.number total_pages=page_obj.paginator.num_pages %}Page {{current_page}} of {{total_pages}}{% endblocktrans %}
+            </span>
 
 
             {% if page_obj.has_next %}

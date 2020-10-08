@@ -9,17 +9,27 @@
 {% endblock search_bar %}
 {% block content %}
 
-    <h2>Search!!</h2>
+    <h2 class="w-full text-center mb-10 text-teal-600 font-medium text-2xl">Search Room</h2>
 
-    <form method="get" action="{% url 'rooms:search' %}">
-        {{form.as_p}}
-        <button>Search</button>
-    </form>
+    <div class="w-full flex flex-row">
+        <div class="w-1/2 flex-col p-10 flex items-center mx-10 rounded-lg border mb-10">
+            <form method="get" action="{% url 'rooms:search' %}">
+                {{form.as_p}}
+                <button class="text-center mt-10 text-lg px-32 rounded-md border py-3 block bg-teal-400 border-gray-700">Search</button>
+            </form>
+        </div>
 
-    <h3>Results</h3>
-    {% for room in rooms %}
-        <h5>{{room.name}}</h5>
-    {% endfor %}
+        {% if rooms %}
+            <div class="w-1/2 flex-col flex mx-10 p-10 mb-10 border rounded-lg">
+                <h3 class="w-full text-center mb-10 text-teal-600 font-medium text-xl">Results</h3>
+                {% for room in rooms %}
+                    <li class="text-lg text-teal-800 hover:text-teal-500 font-medium mb-3">
+                        <a href="{% url 'rooms:detail' room.pk %}">{{room.name}}</a>
+                    </li>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
 
     
 {% endblock content %}

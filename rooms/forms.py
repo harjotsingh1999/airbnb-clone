@@ -1,7 +1,7 @@
 from django import forms
+from django.forms.widgets import Widget
 from django_countries.fields import CountryField
 from . import models
-from users import models as user_models
 
 # it also allows us to change/ customise widgets of the fields
 # like CharField uses a Textfield but we can make it use textEdit field
