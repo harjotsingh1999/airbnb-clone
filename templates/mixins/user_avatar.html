@@ -2,6 +2,6 @@
 <div class="{{h_and_w|default:'h-32 w-32'}} rounded-full justify-center bg-cover" style="background-image: url({{user_obj.avatar.url}});">
 {% else %}
     <div class="{{h_and_w|default:'h-32 w-32'}} bg-teal-400 flex justify-center items-center rounded-full overflow-hidden">
-        <span class="text-center text-6xl font-bold text-teal-800">{{user_obj.first_name|first}}</span>
+        <span class="text-center {{text_size|default:'text-6xl'}} font-bold text-teal-800">{{user_obj.first_name|first}}</span>
 {% endif %}
     </div>

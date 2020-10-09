@@ -39,7 +39,10 @@
     </header>
     {% block content %} {% endblock content%}
    
-    {% include "partials/footer.html"%}
+    <div class="w-full">
+      {% include "partials/footer.html"%}
+    </div>
+
     <script>
     // finding the select laguage select menu from the page
       const  langSelect=document.getElementById("js-lang");
